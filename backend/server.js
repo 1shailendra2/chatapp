@@ -1,5 +1,5 @@
 const express = require('express');
-const http = require('http'); // Required for socket.io
+const http = require('http');
 const socketIO = require('socket.io');
 const cors = require('cors');
 const mongoose = require('mongoose');
@@ -7,10 +7,10 @@ const authRoutes = require('./routes/auth');
 const messageRoutes = require('./routes/messages');
 
 const app = express();
-const server = http.createServer(app); // create HTTP server
+const server = http.createServer(app);
 const io = socketIO(server, {
   cors: {
-    origin: "*", // allow all for now
+    origin: "*",
     methods: ["GET", "POST"]
   }
 });
@@ -24,10 +24,10 @@ mongoose.connect('mongodb+srv://shailendra:A7zXvreB77AAlVZL@phaserdb.bfjixkc.mon
   .then(() => console.log('MongoDB connected'))
   .catch((err) => console.log(err));
 
-// ✅ Store online users
+
 const onlineUsers = new Map();
 
-// ✅ Handle socket connections
+
 io.on('connection', (socket) => {
   console.log('A user connected');
 
