@@ -1,15 +1,18 @@
 const express = require('express');
+const dotenv=require('dotenv')
 const http = require('http');
 const socketIO = require('socket.io');
 const cors = require('cors');
 const mongoose = require('mongoose');
 const authRoutes = require('./routes/auth');
 const messageRoutes = require('./routes/messages');
-
+dotenv.config()
 const app = express();
+const server = http.createServer(app);
 const server = http.createServer(app);
 const io = socketIO(server, {
   cors: {
+    origin: "*",
     origin: "*",
     methods: ["GET", "POST"]
   }
@@ -20,14 +23,11 @@ app.use(express.json());
 app.use('/api/auth', authRoutes);
 app.use('/api/messages', messageRoutes);
 
-mongoose.connect('mongodb+srv://shailendra:A7zXvreB77AAlVZL@phaserdb.bfjixkc.mongodb.net/?retryWrites=true&w=majority&appName=phaserdb')
+mongoose.connect(process.env.MONGO_URL)
   .then(() => console.log('MongoDB connected'))
   .catch((err) => console.log(err));
 
-
 const onlineUsers = new Map();
-
-
 io.on('connection', (socket) => {
   console.log('A user connected');
 
