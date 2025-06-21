@@ -1,12 +1,14 @@
 const express = require('express');
-const dotenv=require('dotenv')
+const dotenv = require('dotenv');
 const http = require('http');
 const socketIO = require('socket.io');
 const cors = require('cors');
 const mongoose = require('mongoose');
 const authRoutes = require('./routes/auth');
 const messageRoutes = require('./routes/messages');
-dotenv.config()
+
+dotenv.config();
+
 const app = express();
 const server = http.createServer(app);
 const server = http.createServer(app);
@@ -28,6 +30,7 @@ mongoose.connect(process.env.MONGO_URL)
   .catch((err) => console.log(err));
 
 const onlineUsers = new Map();
+
 io.on('connection', (socket) => {
   console.log('A user connected');
 
