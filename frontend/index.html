@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Simple Chat</title>
+  <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+  <style>
+    #messages { border: 1px solid #ccc; height: 300px; overflow-y: scroll; padding: 10px; }
+    #messages div { margin-bottom: 8px; }
+  </style>
+</head>
+<body>
+  <h2>Join Chat</h2>
+  <input id="username" placeholder="Enter your username" />
+  <button id="joinBtn">Join</button>
+
+  <div id="chat" style="display:none;">
+    <h3>Logged in as <span id="displayUsername"></span></h3>
+
+    <input id="recipient" placeholder="Recipient username" /><br /><br />
+    <input id="messageInput" placeholder="Type message" />
+    <button id="sendBtn">Send</button>
+
+    <h3>Messages</h3>
+    <div id="messages"></div>
+  </div>
+
+  <script>
+    const socket = io('http://localhost:3000');
+    let username = '';
+
+    const joinBtn = document.getElementById('joinBtn');
+    const usernameInput = document.getElementById('username');
+    const chatDiv = document.getElementById('chat');
+    const displayUsername = document.getElementById('displayUsername');
+    const recipientInput = document.getElementById('recipient');
+    const messageInput = document.getElementById('messageInput');
+    const sendBtn = document.getElementById('sendBtn');
+    const messagesDiv = document.getElementById('messages');
+
+    joinBtn.onclick = () => {
+      const val = usernameInput.value.trim();
+      if (val) {
+        username = val;
+        socket.emit('join', username);
+        displayUsername.textContent = username;
+        chatDiv.style.display = 'block';
+      }
+    };
+
+    sendBtn.onclick = () => {
+      const recipient = recipientInput.value.trim();
+      const content = messageInput.value.trim();
+      if (recipient && content) {
+        socket.emit('send_message', { recipient, content });
+        addMessage(username, content);
+        messageInput.value = '';
+      }
+    };
+
+    socket.on('receive_message', ({ sender, content }) => {
+      addMessage(sender, content);
+    });
+
+    function addMessage(sender, content) {
+      const div = document.createElement('div');
+      div.textContent = sender + ': ' + content;
+      messagesDiv.appendChild(div);
+      messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    }
+  </script>
+</body>
+</html>
